@@ -1,17 +1,27 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:triantrak/sereen/Replay/cubit/replay_inquiry_cubit.dart';
 import 'package:triantrak/sereen/auth/login/cubit/cubit.dart';
 import 'package:triantrak/sereen/home/HomeScreen.dart';
 
 import 'package:triantrak/sereen/auth/login/login.dart';
+import 'package:triantrak/sereen/home/InquiriesView.dart';
+import 'package:triantrak/sereen/home/cubit/HomeCubit.dart';
+import 'package:triantrak/sereen/home/cubit/SearchCubit.dart';
 import 'package:triantrak/shared/network/local/Cach_helper.dart';
 import 'package:triantrak/shared/network/remote/dio_helper.dart';
+
+
+import 'layout/AppThemes.dart';
+import 'layout/cubit/theme_cubit.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
    CachHelper.init();  // <--- مهم جداً
+  final themeCubit = ThemeCubit();
+   themeCubit.loadTheme();
 
   DioHelper.init();
   runApp( MyApp());
@@ -36,39 +46,30 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create:(context) => LoginCubit(),)
+        BlocProvider(create:(context) => LoginCubit(),),
+        BlocProvider(create:(context) => ReplayInquiryCubit()),
+        BlocProvider(create:(context) => SearchInquiryCubit()),
+        BlocProvider(create:(context) => ThemeCubit()..loadTheme()),
+        BlocProvider(create:(context) => InquiriesCubit()..fetchInquiries(token: CachHelper.getData(key: 'token'))),
+
+
+
 
         // BlocProvider(create: (context) => DetailsCubit(),)
 
       ],
-      child: MaterialApp(
-
-            debugShowCheckedModeBanner: false,
-            title: 'TrainTrack',
-            theme: ThemeData(
-              // This is the theme of your application.
-              //
-              // TRY THIS: Try running your application with "flutter run". You'll see
-              // the application has a blue toolbar. Then, without quitting the app,
-              // try changing the seedColor in the colorScheme below to Colors.green
-              // and then invoke "hot reload" (save your changes or press the "hot
-              // reload" button in a Flutter-supported IDE, or press "r" if you used
-              // the command line to start the app).
-              //
-              // Notice that the counter didn't reset back to zero; the application
-              // state is not lost during the reload. To reset the state, use hot
-              // restart instead.
-              //
-              // This works for code too, not just values: Most code changes can be
-              // tested with just a hot reload.
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent),
-              useMaterial3: true,
-            ),
-            home:  LoginScreen()
-          // Test(changeLanguage:(p0) => Locale("en","")),
-        ) ,
-
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+    builder: (context, themeMode) {
+    return MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'TrainTrack',
+    theme: AppThemes.lightTheme,
+    darkTheme: AppThemes.darkTheme,
+    themeMode: themeMode, // هذا السطر الآن صحيح
+    home:LoginScreen(),
     );
+    },
+    ),);
   }
 }
 

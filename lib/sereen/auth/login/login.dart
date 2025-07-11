@@ -366,7 +366,7 @@ class LoginScreen extends StatelessWidget {
                               //   "Welcome to TrainTrack",
                               //   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColor.primaryBlue),
                               // ),
-                              SizedBox(height:5/0 ),
+                              SizedBox(height:50 ),
                               Container(
                                 width: double.infinity,
                                 child: Column(
@@ -377,13 +377,16 @@ class LoginScreen extends StatelessWidget {
                                    // Image.asset('assets/images/petopia.png'),
                                     Text(
                                       '   LOGIN:',
-                                      // style: Theme.of(context).textTheme.headline3
+                                    style:   TextStyle(
+                                          color: Colors.grey
+                                      ),
+                                       //style: Theme.of(context).textTheme.headline3
                                     ),
                                     Text(
                                       '   login now to browse our hot offers',
-                                      // style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      //     color: Colors.grey
-                                      // ),
+                                      style: TextStyle(
+                                         color: Colors.grey
+                                       ),
                                     ),
                                   ],
                                 ),

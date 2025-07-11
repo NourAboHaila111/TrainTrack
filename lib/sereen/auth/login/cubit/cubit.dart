@@ -17,7 +17,7 @@ import '../../../../shared/components/components.dart';
 import '../../../../shared/network/local/Cach_helper.dart';
 import '../../../../shared/network/remote/End_point.dart';
 import '../check_forget_code.dart';
-import 'LoginModel.dart';
+import '../../../../model/LoginModel.dart';
 
 import '../../../../shared/network/remote/dio_helper.dart';
 
@@ -73,36 +73,7 @@ class LoginCubit extends Cubit<LoginState> {
    // if (!RegExp(r'[0-9]').hasMatch(password)) return 'Password must contain at least one number';
     return null;
   }
-// login_cubit.dart
 
-  // void forgetPassword(BuildContext context) async {
-  //   emit(ForgetPasswordLoading());
-  //
-  //   final token = CachHelper.getData(key: 'token');
-  //
-  //   if (token == null) {
-  //     emit(ForgetPasswordError("User is not authenticated"));
-  //     return;
-  //   }
-  //
-  //   try {
-  //     final response = await DioHelper.postData(
-  //       url: FORGET_PASSWORD,
-  //       token: token, data: {},
-  //     );
-  //
-  //     final message = response.data['message'] ?? "Code sent successfully";
-  //     emit(ForgetPasswordSuccess(message));
-  //     navigateTo(context, CheckCodeScreen());
-  //   } catch (error) {
-  //     if (error is DioError) {
-  //       final msg = error.response?.data["message"] ?? "Something went wrong";
-  //       emit(ForgetPasswordError(msg));
-  //     } else {
-  //       emit(ForgetPasswordError(error.toString()));
-  //     }
-  //   }
-  // }
   void forgetPassword({
     required BuildContext context,
     required String email,

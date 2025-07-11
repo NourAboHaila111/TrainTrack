@@ -189,8 +189,8 @@ Widget Homecard({
   required String text,
   required String textnum,
 }) => Container(
-  height: 90,
-  width: 160,
+  height: 50,
+  width: 100,
   child:Row(
     children: [
       SizedBox(width: 5,),
@@ -198,17 +198,19 @@ Widget Homecard({
       //SizedBox(width: 10,),
       Column(
         children: [
-          SizedBox(height: 18,),
-          Text(text,textAlign:TextAlign.center, style: TextStyle(color: AppColor.primaryGrye,fontSize: 13,fontWeight:FontWeight.w600),),
-          SizedBox(height: 10,),
-          Text(textnum,textAlign:TextAlign.center, style: TextStyle(color: Colors.black,fontSize: 18,fontWeight:FontWeight.w600),),
+          //SizedBox(height: 18,),
+          Text(text,textAlign:TextAlign.center, style: TextStyle(fontSize: 8,fontWeight:FontWeight.w300),),
+         // SizedBox(height: 10,),
+          Text(textnum,textAlign:TextAlign.center, style: TextStyle(fontSize: 13,fontWeight:FontWeight.w300),),
         ],
       ),
     ],
   ) ,
+
   decoration: BoxDecoration(
     borderRadius: BorderRadius.circular(20),
-    color: AppColor.primaryWhait,
+    //color: AppColor.primaryWhait,
+     border: Border.all(color: AppColor.secondaryGrye, width: 2),
   ),
 );
 

@@ -43,6 +43,7 @@ dependencies:
   flutter_svg: ^2.1.0
   flutter_animate: ^4.5.2
   flutter_otp_text_field: ^1.5.1+1
+  timeline_tile: ^2.0.0
 
 
 

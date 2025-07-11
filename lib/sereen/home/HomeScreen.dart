@@ -1,151 +1,130 @@
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../layout/triantrack_layout.dart';
-import '../../shared/components/AppColors.dart';
-import '../../shared/components/components.dart';
-import '../Reporte/ReportsScreem.dart';
-import 'HomeWidget.dart';
-import 'InquiriesView.dart';
 
-class HomeScreen extends StatelessWidget {
-  final TextEditingController searchController = TextEditingController();
-  final String role; // 'Trainer' or other roles
+import 'package:flutter/material.dart';
+
+
+class HomeScreen extends StatefulWidget {
+  final String role;
 
   HomeScreen({required this.role});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int currentIndex = 0;
+
+  // استخدم هذه الطريقة لإرجاع المحتوى حسب التبويب والدور
+  Widget getCurrentScreen() {
+    switch (currentIndex) {
+      case 0:
+        return widget.role == 'Trainer'
+            ? TrainerLayout()
+            : EmployeeLayout(searchController: TextEditingController());
+      case 1:
+        return InboxScreen(role: widget.role);
+      case 2:
+        return MyWorkScreen(role: widget.role);
+      default:
+        return Center(child: Text('Unknown Tab'));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return role == 'Trainer' ? TrainerLayout() : EmployeeLayout(searchController: searchController);
+    return Scaffold(
+      body: getCurrentScreen(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) => setState(() => currentIndex = index),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.inbox),
+            label: 'Inbox',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.work),
+            label: 'My Work',
+          ),
+        ],
+      ),
+    );
   }
 }
-//
-// class HomeScreen extends StatelessWidget {
-//   final TextEditingController searchController = TextEditingController();
-//    String assetName = 'assets/images/logo.svg';
-//
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     var screenSize = MediaQuery.of(context).size;
-//     final Widget svgIcon =SvgPicture.asset(
-//       'assets/images/logo.svg',
-//       width: 200,
-//       height: 200,
-//       fit: BoxFit.contain,
-//     );
-//     return Scaffold(
-//       backgroundColor: AppColor.secondaryGrye,
-//       appBar: AppBar(
-//
-//         backgroundColor: AppColor.primaryYellow,
-//         title: Row(
-//           children: [
-//             Text("Home"
-//               ,
-//               style: TextStyle(color: Colors.white,fontSize: 25,fontWeight:FontWeight.w600),
-//             ),
-//             SizedBox(width: 90,),
-//             Container(
-//               height: 40,
-//               width: 150,
-//               decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
-//                 color: AppColor.secondaryGrye,),
-//              // color: AppColor.primaryWhait,
-//               child: TextField(
-//                 controller: searchController,
-//                 decoration: InputDecoration(
-//                   hintText: 'Search for inquiries',
-//                   hintStyle: TextStyle(color: Colors.grey,fontSize: 15,),
-//                   prefixIcon: Icon(Icons.search_outlined),
-//                   border: OutlineInputBorder(
-//                     borderRadius: BorderRadius.circular(18.0),
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//       drawer: Drawer(
-//         backgroundColor:Colors.white,
-//         child: ListView(
-//           padding: EdgeInsets.zero,
-//           children: [
-//             DrawerHeader(
-//               decoration: BoxDecoration(color: AppColor.primaryYellow),
-//               child: Column(
-//                 children: [
-//                  // Image.asset('assets/images/logo.svg'),
-//        //// const String assetName = 'assets/images/logo.svg';
-//                   Image.asset(
-//                     'assets/images/logo-2.png',
-//                     width: 250,
-//                     height: 100,
-//                     fit: BoxFit.contain,
-//                   ),
-//
-//
-//                 ],
-//               ),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.home,color:AppColor.primaryBlue),
-//               title: Text('Home', style: TextStyle(color: AppColor.primaryBlue,fontSize: 20,fontWeight:FontWeight.w500),),
-//               onTap: () {
-//                 navigateTo(context, HomeScreen());
-//               },
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.person,color:AppColor.primaryBlue),
-//               title:Text(" Inquiries", style: TextStyle(color: AppColor.primaryBlue,fontSize: 20,fontWeight:FontWeight.w500),),
-//
-//       onTap: () {
-//         navigateTo(context, HomeScreen());
-//               },
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.settings,color:AppColor.primaryBlue ,),
-//               title: Text('Reports', style: TextStyle(color: AppColor.primaryBlue,fontSize: 20,fontWeight:FontWeight.w500),),
-//               onTap: () {
-//                 navigateTo(context, ReportsScreen());
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//       body: ListView(
-//         //crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//
-//           SizedBox(height: 10,),
-//           Padding(
-//             padding: const EdgeInsets.all(15.0),
-//             child: Row(
-//               children: [
-//                 //
-//                 Homecard(text: 'pending inquiries', textnum: '5,666',iconColor: AppColor.mypink,
-//                     icon1: Icons.pending),
-//                 SizedBox(width: 30,),
-//                 Homecard(text: 'all inquiries', textnum: '6.777',iconColor: AppColor.primaryRed,
-//                 icon1: Icons.query_builder),
-//               ],
-//
-//             ),
-//           ),
-//           SizedBox(height: 10,),
-//           Padding(
-//             padding: const EdgeInsets.all(5.0),
-//             child: Text(" Inquiries",textAlign:TextAlign.start, style: TextStyle(color: AppColor.primaryBlue,fontSize: 20,fontWeight:FontWeight.w600),),
-//           ),
-//
-//           CategorySelector(),
-// Container(
-//   height: 500,
-//   color: AppColor.primaryWhait,
-//   child:ListView(children: [QueryTable()],) ,),
-//         ],
-//       ),
-//     );
-//   }
-// }
+
+// inbox_screen.dart
+
+// Inbox screen
+class InboxScreen extends StatelessWidget {
+  final String role;
+
+  InboxScreen({required this.role});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Inbox")),
+      body: ListView(
+        padding: EdgeInsets.all(16),
+        children: List.generate(5, (index) => _inboxItem(index)),
+      ),
+    );
+  }
+
+  Widget _inboxItem(int index) {
+    return Card(
+      margin: EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: Icon(Icons.mail_outline, color: Colors.blueAccent),
+        title: Text("Message #$index"),
+        subtitle: Text("This is a message for $role."),
+        trailing: Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () {},
+      ),
+    );
+  }
+}
+
+// My Work screen
+class MyWorkScreen extends StatelessWidget {
+  final String role;
+
+  MyWorkScreen({required this.role});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("My Work")),
+      body: ListView(
+        padding: EdgeInsets.all(16),
+        children: List.generate(5, (index) => _workItem(index)),
+      ),
+    );
+  }
+
+  Widget _workItem(int index) {
+    return Card(
+      margin: EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: Icon(Icons.assignment_turned_in, color: Colors.green),
+        title: Text("Task #$index"),
+        subtitle: Text("Assigned to $role"),
+        trailing: Icon(Icons.check_circle_outline),
+        onTap: () {},
+      ),
+    );
+  }
+}
+

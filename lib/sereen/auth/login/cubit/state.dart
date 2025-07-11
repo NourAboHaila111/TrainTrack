@@ -1,6 +1,6 @@
 // login_state.dart
 import 'package:meta/meta.dart';
-import 'package:triantrak/sereen/auth/login/cubit/LoginModel.dart';
+import 'package:triantrak/model/LoginModel.dart';
 
 @immutable
 abstract class LoginState {}

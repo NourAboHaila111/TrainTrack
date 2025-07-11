@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../shared/components/AppColors.dart';
+import 'cubit/HomeCubit.dart';
 
 class CategorySelector extends StatefulWidget {
   @override
@@ -8,24 +10,26 @@ class CategorySelector extends StatefulWidget {
 }
 
 class _CategorySelectorState extends State<CategorySelector> {
-  List<String> categories = ['All', '  Open', '  Close', 'Pending',];
+  List<String> categories = ['All','Opened','Closed','Pending',];
   int selectedIndex = 0; // أول عنصر هو المختار
 
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 70,
+      height: 65,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
         itemBuilder: (context, index) {
           bool isSelected = selectedIndex == index;
           return InkWell(
-            onTap: () {
-              setState(() {
-                selectedIndex = index;
-              });
+              onTap: () {
+                setState(() {
+                  selectedIndex = index;
+                });
+                BlocProvider.of<InquiriesCubit>(context).filterInquiries(categories[index]);
+
               // نفّذ الإجراء المطلوب هنا، مثلاً تحميل بيانات التصنيف
               // controller.gotoitems(controller.catogry, index);
             },

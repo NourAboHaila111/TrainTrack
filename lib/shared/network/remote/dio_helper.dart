@@ -164,7 +164,7 @@ class DioHelper {
   static init() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://de00-138-199-22-105.ngrok-free.app/api', // عدل هذا حسب رابط API الحقيقي
+        baseUrl: 'https://a8b1650a23a3.ngrok-free.app/api', // عدل هذا حسب رابط API الحقيقي
         receiveDataWhenStatusError: true,
         headers: {'accept': 'application/json'},
       ),
@@ -179,4 +179,21 @@ class DioHelper {
     dio.options.headers['Authorization'] = token != null ? 'Bearer $token' : '';
     return await dio.post(url, data: data);
   }
+
+  static Future<Response> getData({
+    required String url,
+    Map<String, dynamic>? query,
+    String? token,
+  }) async {
+    dio.options.headers['Authorization'] = token != null ? 'Bearer $token' : '';
+    return await dio.get(url, queryParameters: query);
+  }
+  static Future<Response> deleteData({
+    required String url,
+    String? token,
+  }) async {
+    dio.options.headers['Authorization'] = token != null ? 'Bearer $token' : '';
+    return await dio.delete(url);
+  }
+
 }

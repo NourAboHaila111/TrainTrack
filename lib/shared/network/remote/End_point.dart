@@ -4,7 +4,7 @@ const LOGIN='/login';
 const FORGET_PASSWORD='/forget_password';
 const CHECK_FORGET_CODE='/check_forget_code';
 const RESET_PASSWORD ='/reset_password';
-const STORMARKET ='market/stock/index';
+const FOLLOWUP ='/followups';
 const SHOWPRODUCT='products/index';
 const GETAPPO='veterinary/appointments';
 

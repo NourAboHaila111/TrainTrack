@@ -1,87 +1,317 @@
-import 'package:flutter/material.dart';
-import 'package:triantrak/shared/components/AppColors.dart';
+//
+// import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+//
+// import '../../model/InquiryModel.dart';
+// import '../../shared/components/AppColors.dart';
+// import '../../shared/components/components.dart';
+// import '../Replay/ReplayInquiriesScreen.dart';
+// import 'Timeline.dart';
+// import 'cubit/HomeCubit.dart';
+// import 'cubit/HomeState.dart';
+//
+// class QueryTable extends StatelessWidget {
+//   const QueryTable({super.key});
+//
+//   // تحديد لون الحالة
+//   Color getStatusColor(String status) {
+//     switch (status.toLowerCase()) {
+//       case 'opened':
+//         return AppColor.primaryBlue;
+//       case 'closed':
+//         return AppColor.primaryRed;
+//       case 'pending':
+//         return AppColor.mypink;
+//       default:
+//         return Colors.blueGrey;
+//     }
+//   }
+//
+//   // عرض الـ Dialog الخاص بالـ Timeline
+//   void showTimelineDialog(BuildContext context, String currentStatus) {
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: const Text("Inquiry Timeline"),
+//         content: SizedBox(
+//           width: double.maxFinite,
+//           height: 400,
+//           child: InquiryTimeline(currentStatus: currentStatus),
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.pop(context),
+//             child: const Text("Close"),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocBuilder<InquiriesCubit, InquiriesState>(
+//       builder: (context, state) {
+//         if (state is InquiriesLoading) {
+//           return const Center(child: CircularProgressIndicator());
+//         } else if (state is InquiriesError) {
+//           return Center(child: Text('Error: ${state.message}'));
+//         } else if (state is InquiriesLoaded) {
+//           final List<Inquiry> data = state.inquiries;
+//
+//           return ListView.builder(
+//             itemCount: data.length,
+//             shrinkWrap: true,
+//             physics: const NeverScrollableScrollPhysics(),
+//             itemBuilder: (context, index) {
+//               final item = data[index];
+//
+//               return Card(
+//                 elevation: 4,
+//                 margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+//                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+//                 child: Padding(
+//                   padding: const EdgeInsets.all(16.0),
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       // عنوان الاستفسار
+//                       Hero(
+//                         tag: 'inquiry-title-$index',
+//                         child: Material(
+//                           color: Colors.transparent,
+//                           child: Text(
+//                             item.title,
+//                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(height: 8),
+//
+//                       // حالة الاستفسار والفئة + زر الرد + عرض التايملاين
+//                       Row(
+//                         children: [
+//                           // الحالة
+//                           Chip(
+//                             label: Text(item.status),
+//                             backgroundColor: getStatusColor(item.status),
+//                             labelStyle: const TextStyle(color: Colors.white),
+//                           ),
+//
+//                           const SizedBox(width: 10),
+//
+//                           // الفئة
+//                           Text(
+//                             item.category,
+//                             style: const TextStyle(fontSize: 14, color: AppColor.primaryGrye),
+//                           ),
+//
+//                           const Spacer(),
+//
+//                           // زر الرد
+//                           ElevatedButton(
+//                             onPressed: () {
+//                               navigateTo(
+//                                 context,
+//                                 Replayinquiriesscreen(
+//                                   inquiry: {
+//                                     'id': item.id.toString(),
+//                                     'title': item.title,
+//                                     'status': item.status,
+//                                     'category': item.category,
+//                                   },
+//                                   tagIndex: index,
+//                                 ),
+//                               );
+//                             },
+//                             child: const Text(
+//                               'Reply',
+//                               style: TextStyle(fontWeight: FontWeight.w300),
+//                             ),
+//                             style: ElevatedButton.styleFrom(
+//                               backgroundColor: AppColor.mybabyellow,
+//                               foregroundColor: Colors.black,
+//                               shape: RoundedRectangleBorder(
+//                                 borderRadius: BorderRadius.circular(8),
+//                               ),
+//                             ),
+//                           ),
+//
+//                           // زر التايملاين
+//                           IconButton(
+//                             icon: const Icon(Icons.timeline),
+//                             tooltip: 'View Timeline',
+//                             onPressed: () {
+//                               showTimelineDialog(context, item.status);
+//                             },
+//                           ),
+//                         ],
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               );
+//             },
+//           );
+//         }
+//
+//         return const SizedBox.shrink();
+//       },
+//     );
+//   }
+// }
 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../model/InquiryModel.dart';
+import '../../shared/components/AppColors.dart';
 import '../../shared/components/components.dart';
 import '../Replay/ReplayInquiriesScreen.dart';
+import 'Timeline.dart';
+import 'cubit/HomeCubit.dart';
+import 'cubit/HomeState.dart';
 
 class QueryTable extends StatelessWidget {
-  final List<Map<String, String>> data = [
-    {
-      'title': 'هل يتم تفعيل..',
-      'status': 'Open',
-      'category': 'ADS',
-    },
-    {
-      'title': 'هل يتم تفعيل..',
-      'status': 'Open',
-      'category': 'Cash Mobile',
-    },
-    {
-      'title': 'هل يتم تفعيل..',
-      'status': 'Closed',
-      'category': 'MTN Speed',
-    },
-    {
-      'title': 'هل يتم تفعيل..',
-      'status': 'Pending',
-      'category': 'MTN TV',
-    },
-    {
-      'title': 'هل يتم تفعيل..',
-      'status': 'Pending',
-      'category': 'iMTN',
-    },
-    {
-      'title': 'هل يتم تفعيل..',
-      'status': 'Closed',
-      'category': 'RBT',
-    },
-    {
-      'title': 'هل يتم تفعيل..',
-      'status': 'Pending',
-      'category': 'Roaming',
-    },
-    {
-      'title': 'هل يتم تفعيل..',
-      'status': 'Open',
-      'category': 'Gift balance',
-    },
-  ];
+  final List<Inquiry>? inquiries;
+
+  const QueryTable({super.key, this.inquiries});
+
+  Color getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'opened':
+        return AppColor.primaryBlue;
+      case 'closed':
+        return AppColor.primaryRed;
+      case 'pending':
+        return AppColor.mypink;
+      default:
+        return Colors.blueGrey;
+    }
+  }
+
+  void showTimelineDialog(BuildContext context, String currentStatus) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Inquiry Timeline"),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400,
+          child: InquiryTimeline(currentStatus: currentStatus),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Close"),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columnSpacing: 25,
-        headingRowColor: MaterialStateProperty.all(AppColor.primaryWhait),
-        columns: const [
-         // DataColumn(label: Text('ID',style:TextStyle(color: AppColor.primaryGrye),)),
-          DataColumn(label: Text('Title',style:TextStyle(color: AppColor.primaryGrye),)),
-          DataColumn(label: Text('Status',style:TextStyle(color: AppColor.primaryGrye),)),
-          DataColumn(label: Text('Category',style:TextStyle(color: AppColor.primaryGrye),)),
-          DataColumn(label: Text('Reply',style:TextStyle(color: AppColor.primaryGrye),)),
+    if (inquiries != null) {
+      return buildInquiryList(inquiries!);
+    }
 
-        ],
-        rows: data.map((item) {
-          return DataRow(cells: [
-            //DataCell(Text(item['id']!)),
-            DataCell(Text(item['title']!)),
-            DataCell(Container(width: 65, decoration:BoxDecoration(borderRadius:BorderRadius.circular(20),color: AppColor.primaryBlue),child: Text(item['status']!,style:TextStyle(color: AppColor.primaryWhait),textAlign: TextAlign.center,))),
-            DataCell(Text(item['category']!)),
-            DataCell(
-              ElevatedButton(
-                onPressed: () {
-                  navigateTo(context,Replayinquiriesscreen());
-                  // Reassign action
-                },
-                child: Text('Reply'),
-              ),
+    return BlocBuilder<InquiriesCubit, InquiriesState>(
+      builder: (context, state) {
+        if (state is InquiriesLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is InquiriesError) {
+          return Center(child: Text('Error: ${state.message}'));
+        } else if (state is InquiriesLoaded) {
+          return buildInquiryList(state.inquiries);
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget buildInquiryList(List<Inquiry> data) {
+    if (data.isEmpty) {
+      return const Center(child: Text("لا توجد استفسارات مطابقة."));
+    }
+
+    return ListView.builder(
+      itemCount: data.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        final item = data[index];
+        return Card(
+          elevation: 4,
+          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Hero(
+                  tag: 'inquiry-title-$index',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      item.title,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Chip(
+                      label: Text(item.status),
+                      backgroundColor: getStatusColor(item.status),
+                      labelStyle: const TextStyle(color: Colors.white),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      item.category,
+                      style: const TextStyle(fontSize: 14, color: AppColor.primaryGrye),
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        navigateTo(
+                          context,
+                          Replayinquiriesscreen(
+                            inquiry: {
+                              'id': item.id.toString(),
+                              'title': item.title,
+                              'status': item.status,
+                              'category': item.category,
+                            },
+                            tagIndex: index,
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor.mybabyellow,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text('Reply', style: TextStyle(fontWeight: FontWeight.w300)),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.timeline),
+                      tooltip: 'View Timeline',
+                      onPressed: () {
+                        showTimelineDialog(context, item.status);
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-
-          ]);
-        }).toList(),
-      ),
+          ),
+        );
+      },
     );
   }
 }
