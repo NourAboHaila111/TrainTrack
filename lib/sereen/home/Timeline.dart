@@ -15,11 +15,12 @@ class InquiryTimeline extends StatelessWidget {
   ];
 
   final Map<String, String> stepDescriptions = {
-    'opened': 'تم فتح الاستفسار من قبل المستخدم.',
-    'assigned': 'تم تعيينه إلى الموظف المختص.',
-    'in progress': 'جاري التعامل مع الاستفسار.',
-    'replied': 'تم الرد على الاستفسار.',
-    'closed': 'تم إغلاق الاستفسار.',
+    'opened': 'The inquiry has been opened by the user.',
+    'assigned': 'Assigned to the responsible employee.',
+    'in progress': 'The inquiry is in progress.',
+    'replied': 'The inquiry has been replied to.',
+    'closed': 'The inquiry has been closed.',
+
   };
 
   @override

@@ -194,12 +194,12 @@ Widget Homecard({
   child:Row(
     children: [
       SizedBox(width: 5,),
-      Icon(icon1 ,color: iconColor,size: 40,),
+      Icon(icon1 ,color: iconColor,size: 20,),
       //SizedBox(width: 10,),
       Column(
         children: [
           //SizedBox(height: 18,),
-          Text(text,textAlign:TextAlign.center, style: TextStyle(fontSize: 8,fontWeight:FontWeight.w300),),
+          Text(text,textAlign:TextAlign.center, style: TextStyle(fontSize: 12,fontWeight:FontWeight.w300),),
          // SizedBox(height: 10,),
           Text(textnum,textAlign:TextAlign.center, style: TextStyle(fontSize: 13,fontWeight:FontWeight.w300),),
         ],

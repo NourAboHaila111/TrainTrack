@@ -25,7 +25,8 @@ class SearchInquiryCubit extends Cubit<SearchInquiryState> {
 
       emit(SearchInquirySuccess(inquiries));
     } catch (e) {
-      emit(SearchInquiryFailure('حدث خطأ أثناء البحث: ${e.toString()}'));
+      print("Failure..................... ${e.toString()}");
+      emit(SearchInquiryFailure('Failure ${e.toString()}'));
     }
   }
 }

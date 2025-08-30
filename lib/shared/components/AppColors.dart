@@ -11,5 +11,6 @@ class AppColor {
   static const Color mypink = Color(0x76EC1E28);
   static const Color mybabyblue =Colors.deepPurple;
   static const Color mybabyellow =Color(0xfff8f5ea);
+  static const Color mybabyellowDark = Color(0xFFFBC02D); // مثال: Yellow 700
 
 }

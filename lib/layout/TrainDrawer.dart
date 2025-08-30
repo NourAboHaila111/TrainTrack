@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../shared/components/components.dart';
 import '../../sereen/Reporte/ReportsScreem.dart';
 import '../../sereen/home/HomeScreen.dart';
-import '../sereen/auth/Profile.dart';
+import '../sereen/auth/profile/Profile.dart';
+import '../sereen/auth/profile/cubit/ProfileCubit.dart';
 import '../shared/components/AppColors.dart';
 import 'cubit/theme_cubit.dart';
 
@@ -24,13 +25,22 @@ class TrainDrawer extends StatelessWidget {
           _drawerItem(context, Icons.home, 'Home', () => navigateTo(context, HomeScreen(role: 'Trainer'))),
           _drawerItem(context, Icons.question_answer_outlined, 'Inquiries', () => navigateTo(context, HomeScreen(role: 'Trainer'))),
           _drawerItem(context, Icons.person, 'Profile', () => navigateTo(context, ProfileScreen())),
+          _drawerItem(context, Icons.person, 'Reports', () => navigateTo(context, ReportsFilterScreen())),
           SwitchListTile(
             title: Text("Dark Theme", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400)),
             value: ThemeCubit.get(context).state == ThemeMode.dark,
             onChanged: (_) => ThemeCubit.get(context).toggleTheme(),
             secondary: Icon(Icons.brightness_6),
           ),
-          _drawerItem(context, Icons.logout_outlined, 'Logout', () => navigateTo(context, ReportsScreen())),
+          // _drawerItem(
+          //   context,
+          //   Icons.logout_outlined,
+          //   'Logout',
+          //       () {
+          //     ProfileCubit.get(context).logout(context); // استدعاء التابع مباشرة
+          //   },
+          // ),
+
         ],
       ),
     );

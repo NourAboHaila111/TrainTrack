@@ -30,8 +30,6 @@ class _CategorySelectorState extends State<CategorySelector> {
                 });
                 BlocProvider.of<InquiriesCubit>(context).filterInquiries(categories[index]);
 
-              // نفّذ الإجراء المطلوب هنا، مثلاً تحميل بيانات التصنيف
-              // controller.gotoitems(controller.catogry, index);
             },
             child: Padding(
               padding: const EdgeInsets.all(20.0),

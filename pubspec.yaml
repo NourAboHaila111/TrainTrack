@@ -44,6 +44,18 @@ dependencies:
   flutter_animate: ^4.5.2
   flutter_otp_text_field: ^1.5.1+1
   timeline_tile: ^2.0.0
+  fl_chart: ^1.0.0
+  intl: ^0.20.2
+  pusher_channels_flutter: ^2.5.0
+  flutter_local_notifications: ^19.4.0
+  file_picker: ^10.3.2
+  excel: ^4.0.6
+  path_provider: ^2.1.5
+  share_plus: ^11.1.0
+  open_filex: ^4.7.0
+  url_launcher: ^6.3.2
+  photo_view: ^0.15.0
+
 
 
 
@@ -58,25 +70,25 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-  #   - images/a_dot_ham.jpeg
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo-2.png"
 
   # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
+  # https://flutter.dev/to/resolution-awareimages
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package

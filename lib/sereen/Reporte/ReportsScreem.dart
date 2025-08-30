@@ -1,108 +1,189 @@
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:triantrak/layout/TrainDrawer.dart';
+import 'package:triantrak/sereen/Reporte/system_reports_screen.dart';
+import 'package:triantrak/sereen/Reporte/trainers_reports_screen.dart';
+import 'package:triantrak/shared/components/AppColors.dart';
+import 'PersonalReportsScreen.dart';
 
-import 'cubit/reports_bloc.dart';
-import 'cubit/reports_state.dart';
+class ReportsFilterScreen extends StatefulWidget {
+  @override
+  _ReportsFilterScreenState createState() => _ReportsFilterScreenState();
+}
 
+class _ReportsFilterScreenState extends State<ReportsFilterScreen> {
+  DateTime? startDate;
+  DateTime? endDate;
+  final dateFormat = DateFormat("yyyy-MM-dd");
 
-class ReportsScreen extends StatelessWidget {
+  Future<void> _pickDate(BuildContext context, bool isStart) async {
+    final initialDate = isStart ? (startDate ?? DateTime.now()) : (endDate ?? DateTime.now());
+    final newDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (newDate != null) {
+      setState(() {
+        if (isStart) {
+          startDate = newDate;
+        } else {
+          endDate = newDate;
+        }
+      });
+    }
+  }
+
+  void _navigateToReports(BuildContext context, int tabIndex) {
+    if (startDate == null || endDate == null) {
+      _showSnackBar("⚠️ Please select both start and end dates", Colors.orange);
+      return;
+    }
+
+    if (startDate!.isAfter(endDate!)) {
+      _showSnackBar("❌ Start date cannot be after end date", Colors.red);
+      return;
+    }
+
+    final start = dateFormat.format(startDate!);
+    final end = dateFormat.format(endDate!);
+
+    Widget targetScreen;
+    if (tabIndex == 0) {
+      targetScreen = SystemReportsScreen(startDate: start, endDate: end);
+    } else if (tabIndex == 1) {
+      targetScreen = TrainersReportsScreen(startDate: start, endDate: end);
+    } else {
+      targetScreen = PersonalReportsScreen(startDate: start, endDate: end);
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => targetScreen),
+    );
+  }
+
+  void _showSnackBar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ReportsBloc()..add(LoadPersonalReports()),
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text("Reports"),
-            bottom: TabBar(
-              tabs: [
-                Tab(text: "Personal Reports"),
-                Tab(text: "Department Reports"),
-              ],
-              onTap: (index) {
-                final bloc = BlocProvider.of<ReportsBloc>(context);
-                if (index == 0) {
-                  bloc.add(LoadPersonalReports());
-                } else {
-                  bloc.add(LoadDepartmentReports());
-                }
-              },
+    return Scaffold(
+      drawer: TrainDrawer(),
+      appBar: AppBar(
+        title: const Text("Reports"),
+        elevation: 0,
+        backgroundColor: AppColor.primaryYellow,
+      ),
+      body: Stack(
+        children: [
+          // الخلفية
+          Opacity(
+            opacity: 0.7, // نسبة الشفافية (يمكن تعديلها)
+            child: SizedBox.expand(
+              child: Image.asset(
+                'assets/images/chart.png',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          body: TabBarView(
-            children: [
-              ReportsView(),
-              ReportsView(),
-            ],
+
+          // المحتوى فوق الخلفية
+          Padding(
+            padding: const EdgeInsets.all(80),
+            child: Column(
+              children: [
+                _dateCard(
+                  title: "Start Date",
+                  date: startDate,
+                  onTap: () => _pickDate(context, true),
+                  icon: Icons.calendar_month,
+                  color: AppColor.primaryYellow,
+                ),
+                const SizedBox(height: 20),
+                _dateCard(
+                  title: "End Date",
+                  date: endDate,
+                  onTap: () => _pickDate(context, false),
+                  icon: Icons.event,
+                  color: AppColor.primaryBlue,
+                ),
+                const SizedBox(height: 40),
+
+                // الأزرار
+                _reportButton("View System Reports", Icons.bar_chart, AppColor.primaryBlue, () => _navigateToReports(context, 0)),
+                const SizedBox(height: 16),
+                _reportButton("View Trainers Reports", Icons.people, AppColor.primaryBlue, () => _navigateToReports(context, 1)),
+                const SizedBox(height: 16),
+                _reportButton("View Personal Report", Icons.person, AppColor.primaryBlue, () => _navigateToReports(context, 2)),
+              ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _dateCard({
+    required String title,
+    required DateTime? date,
+    required VoidCallback onTap,
+    required IconData icon,
+    required Color color,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withOpacity(0.5)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                "$title: ${date != null ? dateFormat.format(date) : "Not selected"}",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ),
+            const Icon(Icons.edit_calendar, color: Colors.grey),
+          ],
         ),
       ),
     );
   }
-}
 
-class ReportsView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ReportsBloc, ReportsState>(
-      builder: (context, state) {
-        if (state is ReportsLoading) {
-          return Center(child: CircularProgressIndicator());
-        } else if (state is ReportsLoaded) {
-          return Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Month: ${state.currentMonth}",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                Text("Total Queries: ${state.totalQueries}", style: TextStyle(fontSize: 16)),
-                Text("Answered Queries: ${state.answeredQueries}", style: TextStyle(fontSize: 16)),
-                SizedBox(height: 20),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: state.reportDetails.length,
-                    separatorBuilder: (_, __) => SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final report = state.reportDetails[index];
-                      return Container(
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 3))
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              report.title,
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                            ),
-                            Text(
-                              report.value.toString(),
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue.shade900),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        } else if (state is ReportsError) {
-          return Center(child: Text(state.message));
-        }
-        return Center(child: Text("Select a report type"));
-      },
+  Widget _reportButton(String text, IconData icon, Color color, VoidCallback onPressed) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 22),
+        label: Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          elevation: 4,
+        ),
+      ),
     );
   }
 }

@@ -1,9 +1,19 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../layout/TrainDrawer.dart';
 import '../../layout/triantrack_layout.dart';
 
 import 'package:flutter/material.dart';
+
+import '../../model/InquiryModel.dart';
+import '../../model/NotificationModel.dart';
+import '../../notifications/notifications_cubit.dart';
+import '../../notifications/notifications_screen.dart';
+import 'Favourite/FavouriteListScreen.dart';
+import 'cubit/HomeCubit.dart';
+import 'cubit/HomeState.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -18,7 +28,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
 
-  // استخدم هذه الطريقة لإرجاع المحتوى حسب التبويب والدور
   Widget getCurrentScreen() {
     switch (currentIndex) {
       case 0:
@@ -26,9 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ? TrainerLayout()
             : EmployeeLayout(searchController: TextEditingController());
       case 1:
-        return InboxScreen(role: widget.role);
+        return FavouriteListScreen();
       case 2:
-        return MyWorkScreen(role: widget.role);
+        return NotificationsScreen(
+        );
+
       default:
         return Center(child: Text('Unknown Tab'));
     }
@@ -49,12 +60,12 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.inbox),
-            label: 'Inbox',
+            icon: Icon(Icons.favorite),
+            label: 'Favourite',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.work),
-            label: 'My Work',
+            icon: Icon(Icons.notifications),
+            label: 'Notifications',
           ),
         ],
       ),
@@ -62,21 +73,64 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// inbox_screen.dart
-
-// Inbox screen
-class InboxScreen extends StatelessWidget {
+class FavouriteListScreen1 extends StatelessWidget {
   final String role;
 
-  InboxScreen({required this.role});
+  FavouriteListScreen1({required this.role});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Inbox")),
-      body: ListView(
-        padding: EdgeInsets.all(16),
-        children: List.generate(5, (index) => _inboxItem(index)),
+      drawer: TrainDrawer(),
+      appBar: AppBar(title: const Text("Favourite Inquiries")),
+      body: BlocBuilder<InquiriesCubit, InquiriesState>(
+        builder: (context, state) {
+          if (state is InquiriesLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is InquiriesLoaded) {
+            // عرض فقط الاستفسارات المفضلة
+            final favInquiries =
+            state.inquiries.where((inq) => inq.isFavourite).toList();
+
+            if (favInquiries.isEmpty) {
+              return const Center(child: Text("No favourite inquiries yet."));
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: favInquiries.length,
+              itemBuilder: (context, index) {
+                final inquiry = favInquiries[index];
+                return _inquiryCard(context, inquiry);
+              },
+            );
+          } else if (state is InquiriesError) {
+            return Center(child: Text(state.message));
+          } else {
+            return const Center(child: Text("No data available."));
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _inquiryCard(BuildContext context, Inquiry inquiry) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
+      child: ListTile(
+        title: Text(inquiry.title ?? "No Title"),
+        subtitle: Text(inquiry.statusName ?? "No Status"),
+        trailing: IconButton(
+          icon: Icon(
+            inquiry.isFavourite ? Icons.favorite : Icons.favorite_border,
+            color: inquiry.isFavourite ? Colors.red : Colors.grey,
+          ),
+          onPressed: () {
+            context.read<InquiriesCubit>().toggleFavorite(inquiry.id);
+          },
+        ),
       ),
     );
   }
@@ -90,38 +144,6 @@ class InboxScreen extends StatelessWidget {
         title: Text("Message #$index"),
         subtitle: Text("This is a message for $role."),
         trailing: Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () {},
-      ),
-    );
-  }
-}
-
-// My Work screen
-class MyWorkScreen extends StatelessWidget {
-  final String role;
-
-  MyWorkScreen({required this.role});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("My Work")),
-      body: ListView(
-        padding: EdgeInsets.all(16),
-        children: List.generate(5, (index) => _workItem(index)),
-      ),
-    );
-  }
-
-  Widget _workItem(int index) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: Icon(Icons.assignment_turned_in, color: Colors.green),
-        title: Text("Task #$index"),
-        subtitle: Text("Assigned to $role"),
-        trailing: Icon(Icons.check_circle_outline),
         onTap: () {},
       ),
     );

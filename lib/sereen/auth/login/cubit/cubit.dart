@@ -40,7 +40,7 @@ class LoginCubit extends Cubit<LoginState> {
       },
     ).then((response) {
       final loginModel = LoginModel.fromJson(response.data);
-      // حفظ التوكن والرول في الكاش
+
       CachHelper.SaveData(key: 'token', value: loginModel.token);
       CachHelper.SaveData(key: 'role', value: loginModel.user.role.name);
       emit(LoginSuccess(token: loginModel.token));
@@ -92,7 +92,7 @@ class LoginCubit extends Cubit<LoginState> {
 
       emit(ForgetPasswordSuccess(message: message));
 
-      // الانتقال إلى واجهة تحقق الكود مع تمرير الإيميل
+
       navigateTo(context, CheckCodeScreen(email: email));
 
     } catch (error) {

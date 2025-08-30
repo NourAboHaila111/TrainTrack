@@ -1,113 +1,85 @@
-import 'dart:convert';
-
-import 'package:bloc/bloc.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
-import 'package:triantrak/sereen/Replay/cubit/replay_inquiry_state.dart';
-
-import '../../../model/SectionModel.dart';
-import '../../../shared/network/remote/End_point.dart' show FOLLOWUP;
 import '../../../shared/network/remote/dio_helper.dart';
+import 'replay_inquiry_state.dart';
 
 class ReplayInquiryCubit extends Cubit<ReplayInquiryState> {
-  ReplayInquiryCubit()
-      : super(ReplayInquirySectionsLoaded(
-    sections: [],
-    selectedSection: null,
-    selectedStatus: 'Open',
-  ));
+  ReplayInquiryCubit() : super(ReplayInquiryInitial());
 
-  void fetchSections(String token) {
-    emit(ReplayInquiryLoading());
+  static ReplayInquiryCubit get(context) => BlocProvider.of(context);
 
-    DioHelper.getData(
-      url: '/sections',
-      token: token,
-    ).then((response) {
-      final List data = response.data;
-      final sections = data.map((e) => SectionModel.fromJson(e)).toList();
+  List<PlatformFile> selectedAttachments = [];
 
-      emit(ReplayInquirySectionsLoaded(
-        sections: sections,
-        selectedSection: null,
-        selectedStatus: 'Open',
-      ));
-    }).catchError((error) {
-      if (error is DioError) {
-        final response = error.response;
-        final message = response?.data['message'] ?? 'خطأ أثناء إنشاء المتابعة';
-        emit(ReplayInquiryFailure(message: message));
-      } else {
-        emit(ReplayInquiryFailure(message: error.toString()));
+  // اختيار المرفقات
+  Future<void> pickAttachments() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+      if (result != null) {
+        selectedAttachments = result.files;
+        emit(ReplayInquiryAttachmentsAdded(selectedAttachments));
       }
-    });
+    } catch (e) {
+      emit(ReplayInquiryError("Error picking attachments: $e"));
+    }
   }
 
-
-  void createFollowUp({
-    required int inquiryId,
-    required int sectionId,
-    required String token, required String answer, required String status,
-  }) {
-    emit(ReplayInquiryLoading());
-
-    DioHelper.postData(
-      url: FOLLOWUP,
-      token: token,
-      data: {
-        'inquiry_id': inquiryId,
-        'status': 1,
-        'section_id': sectionId,
-      },
-    ).then((response) {
-      emit(ReplayInquirySuccess(message: response.data['message']));
-    }).catchError((error) {
-      if (error is DioError) {
-        final response = error.response;
-        final message = response?.data['message'] ?? 'خطأ أثناء إنشاء المتابعة';
-        emit(ReplayInquiryFailure(message: message));
-      } else {
-        emit(ReplayInquiryFailure(message: error.toString()));
-      }
-    });
-  }
-  void deleteFollowUp({
-    required int followUpId,
+  // استدعاء API للرد على الاستفسار
+  void replyToInquiry({
+    required dynamic inquiryId,
     required String token,
-  }) {
+    required String response,
+  }) async {
     emit(ReplayInquiryLoading());
 
-    DioHelper.deleteData(
-      url: '/followups/$followUpId',
-      token: token,
-    ).then((response) {
-      final message = response.data['message'] ?? 'Follow-up deleted';
-      emit(ReplayInquirySuccess(message: message));
-    }).catchError((error) {
-      if (error is DioError) {
-        final response = error.response;
-        final message = response?.data['message'] ?? 'فشل حذف المتابعة';
-        emit(ReplayInquiryFailure(message: message));
-      } else {
-        emit(ReplayInquiryFailure(message: error.toString()));
+    int id;
+    if (inquiryId is int) {
+      id = inquiryId;
+    } else if (inquiryId is String) {
+      id = int.tryParse(inquiryId) ?? 0;
+    } else {
+      emit(ReplayInquiryError("Invalid inquiry number"));
+      return;
+    }
+
+    if (id == 0) {
+      emit(ReplayInquiryError("Invalid inquiry number"));
+      return;
+    }
+
+    try {
+      // تجهيز الملفات كمصفوفة attachments[]
+      List<MultipartFile> files = [];
+      for (var file in selectedAttachments) {
+        files.add(await MultipartFile.fromFile(
+          file.path!,
+          filename: file.name,
+        ));
       }
-    });
-  }
-  List<SectionModel> sections = [];
 
+      FormData formData = FormData.fromMap({
+        "inquiry_id": id,
+        "response": response,
+        "status_id": 3,
+        if (files.isNotEmpty) "attachments[]": files, // ← لاحظ [] بالمفتاح
+      });
 
+      await DioHelper.postData(
+        url: "/inquiries/reply",
+        token: token,
+        data: formData,
+      );
 
-
-  void selectSection(SectionModel section) {
-    if (state is ReplayInquirySectionsLoaded) {
-      final current = state as ReplayInquirySectionsLoaded;
-      emit(current.copyWith(selectedSection: section));
+      emit(ReplayInquirySuccess("Replied successfully"));
+    } catch (e) {
+      emit(ReplayInquiryError("An error occurred: ${e.toString()}"));
     }
   }
 
-  void emitStatus(String status) {
-    if (state is ReplayInquirySectionsLoaded) {
-      final current = state as ReplayInquirySectionsLoaded;
-      emit(current.copyWith(selectedStatus: status));
-    }
+  void removeAttachment(PlatformFile file) {
+    selectedAttachments.remove(file);
+    emit(ReplayInquiryUpdated()); // حدث الـ UI
   }
+
 }
+

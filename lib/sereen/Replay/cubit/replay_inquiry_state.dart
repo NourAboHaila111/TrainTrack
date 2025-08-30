@@ -1,4 +1,4 @@
-import '../../../model/SectionModel.dart';
+import 'package:file_picker/file_picker.dart';
 
 abstract class ReplayInquiryState {}
 
@@ -8,47 +8,16 @@ class ReplayInquiryLoading extends ReplayInquiryState {}
 
 class ReplayInquirySuccess extends ReplayInquiryState {
   final String message;
-  ReplayInquirySuccess({required this.message});
+  ReplayInquirySuccess(this.message);
 }
 
-// class ReplayInquiryFailure extends ReplayInquiryState {
-//   final String error;
-//   ReplayInquiryFailure({required this.error});
-// }
-
-class ReplayInquirySectionsLoaded extends ReplayInquiryState {
-  final List<SectionModel> sections;
-  final SectionModel? selectedSection;
-  final String selectedStatus;
-
-  ReplayInquirySectionsLoaded({
-    required this.sections,
-    required this.selectedSection,
-    required this.selectedStatus,
-  });
-
-  ReplayInquirySectionsLoaded copyWith({
-    List<SectionModel>? sections,
-    SectionModel? selectedSection,
-    String? selectedStatus,
-  }) {
-    return ReplayInquirySectionsLoaded(
-      sections: sections ?? this.sections,
-      selectedSection: selectedSection ?? this.selectedSection,
-      selectedStatus: selectedStatus ?? this.selectedStatus,
-    );
-  }
-}
-
-
-//
-// class ReplayInquirySectionsLoaded extends ReplayInquiryState {
-//   final List<SectionModel> sections;
-//   ReplayInquirySectionsLoaded(this.sections);
-// }
-
-
-class ReplayInquiryFailure extends ReplayInquiryState {
+class ReplayInquiryError extends ReplayInquiryState {
   final String message;
-  ReplayInquiryFailure({required this.message});
+  ReplayInquiryError(this.message);
 }
+
+class ReplayInquiryAttachmentsAdded extends ReplayInquiryState {
+  final List<PlatformFile> attachments;
+  ReplayInquiryAttachmentsAdded(this.attachments);
+}
+class ReplayInquiryUpdated extends ReplayInquiryState {}
